@@ -15,6 +15,7 @@
 -->
 <#import "/spring.ftl" as spring />
 <#import "lib/template.ftlh" as template>
+
 <@template.header "Topic: ${topic.name}: Search messages">
     <style type="text/css">
         h2 {
@@ -65,6 +66,7 @@
 
 <#assign selectedFormat=searchMessageForm.format!defaultFormat>
 <#assign selectedKeyFormat=searchMessageForm.keyFormat!defaultFormat>
+
 
 <div id="searchMessageFormPanel" class="card">
     <form method="GET" action="<@spring.url '/topic/${topic.name}/search-messages'/>" id="searchMessageForm" class="card-body">
@@ -140,10 +142,12 @@
             <button id="searchMessagesBtn" class="btn btn-success" type="submit"><i class="fa fa-search"></i> Search Messages</button>
         </div>
     </form>
+    
 </div>
 
 <@spring.bind path="searchMessageForm.*"/>
 <div id="message-display" class="container">
+
     <#if messages?? && messages?size gt 0>
         <div class="card text-right bg-transparent border-0">
             <div class="card-body">

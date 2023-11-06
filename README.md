@@ -229,6 +229,12 @@ By default, you could create a topic. If you don't want this feature, you could 
 --topic.createEnabled=false
 ```
 
+By default, you could create checkout Messages. If you don't want this feature, you could disable it with:
+
+```
+--topic.messageEnabled=false
+```
+
 ## Actuator
 Health and info endpoints are available at the following path: `/actuator`
 

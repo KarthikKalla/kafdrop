@@ -16,6 +16,7 @@
 <#import "/spring.ftl" as spring />
 <#import "lib/template.ftlh" as template>
 
+
 <@template.header "Topic: ${topic.name}: Messages">
     <style type="text/css">
         h2 {
@@ -35,6 +36,7 @@
 <h2>Topic Messages: <a href="<@spring.url '/topic/${topic.name}'/>">${topic.name}</a></h2>
 
 <div class="container">
+
     <#if messages?? && messages?size gt 0>
         <#list messages as msg>
             <div class="message-detail">
@@ -49,8 +51,8 @@
                 </div>
             </div>
         </#list>
-
     </#if>
+
 </div>
 
 <@template.footer/>

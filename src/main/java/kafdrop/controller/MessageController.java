@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,6 +66,9 @@ import java.util.List;
 
 @Tag(name = "message-controller", description = "Message Controller")
 @Controller
+@ConditionalOnExpression(
+  "${topic.messageEnabled:true}"
+)
 public final class MessageController {
   private final KafkaMonitor kafkaMonitor;
 
@@ -156,7 +160,6 @@ public final class MessageController {
       defaultForm.setFormat(defaultFormat);
       defaultForm.setKeyFormat(defaultKeyFormat);
       defaultForm.setIsAnyProto(protobufProperties.getParseAnyProto());
-
       model.addAttribute("messageForm", defaultForm);
     }
 
@@ -188,7 +191,7 @@ public final class MessageController {
           messageForm.getPartition(),
           messageForm.getOffset(),
           messageForm.getCount().intValue(),
-          deserializers));
+          deserializers));    
 
     }
 
@@ -204,7 +207,7 @@ public final class MessageController {
    * @param model
    * @return View for seeing messages in a partition.
    */
-  @GetMapping("/topic/{name:.+}/search-messages")
+  @GetMapping("/topic/{name:.+}/search-messages")  
   public String searchMessageForm(@PathVariable("name") String topicName,
                                   @Valid @ModelAttribute("searchMessageForm") SearchMessageForm searchMessageForm,
                                   BindingResult errors,
@@ -212,16 +215,16 @@ public final class MessageController {
     final MessageFormat defaultFormat = messageFormatProperties.getFormat();
     final MessageFormat defaultKeyFormat = messageFormatProperties.getKeyFormat();
 
-    if (searchMessageForm.isEmpty()) {
-      final SearchMessageForm defaultForm = new SearchMessageForm();
+      if (searchMessageForm.isEmpty()) {
+        final SearchMessageForm defaultForm = new SearchMessageForm();
 
-      defaultForm.setSearchText("");
-      defaultForm.setFormat(defaultFormat);
-      defaultForm.setKeyFormat(defaultFormat);
-      defaultForm.setMaximumCount(100);
-      defaultForm.setStartTimestamp(new Date(0));
-      model.addAttribute("searchMessageForm", defaultForm);
-    }
+        defaultForm.setSearchText("");
+        defaultForm.setFormat(defaultFormat);
+        defaultForm.setKeyFormat(defaultFormat);
+        defaultForm.setMaximumCount(100);
+        defaultForm.setStartTimestamp(new Date(0));
+        model.addAttribute("searchMessageForm", defaultForm);
+      }
 
     final TopicVO topic = kafkaMonitor.getTopic(topicName)
       .orElseThrow(() -> new TopicNotFoundException(topicName));
@@ -233,27 +236,27 @@ public final class MessageController {
     model.addAttribute("keyFormats", KeyFormat.values());
     model.addAttribute("descFiles", protobufProperties.getDescFilesList());
 
-    if (!searchMessageForm.isEmpty() && !errors.hasErrors()) {
+      if (!searchMessageForm.isEmpty() && !errors.hasErrors()) {
 
-      final var deserializers = new Deserializers(
-        getDeserializer(topicName, searchMessageForm.getKeyFormat(), searchMessageForm.getDescFile(),
-          searchMessageForm.getMsgTypeName(),
-          protobufProperties.getParseAnyProto()),
-        getDeserializer(topicName, searchMessageForm.getFormat(), searchMessageForm.getDescFile(),
-          searchMessageForm.getMsgTypeName(),
-          protobufProperties.getParseAnyProto())
-      );
+        final var deserializers = new Deserializers(
+          getDeserializer(topicName, searchMessageForm.getKeyFormat(), searchMessageForm.getDescFile(),
+            searchMessageForm.getMsgTypeName(),
+            protobufProperties.getParseAnyProto()),
+          getDeserializer(topicName, searchMessageForm.getFormat(), searchMessageForm.getDescFile(),
+            searchMessageForm.getMsgTypeName(),
+            protobufProperties.getParseAnyProto())
+        );
 
-      var searchResults = kafkaMonitor.searchMessages(
-        topicName,
-        searchMessageForm.getSearchText(),
-        searchMessageForm.getMaximumCount(),
-        searchMessageForm.getStartTimestamp(),
-        deserializers);
+        var searchResults = kafkaMonitor.searchMessages(
+          topicName,
+          searchMessageForm.getSearchText(),
+          searchMessageForm.getMaximumCount(),
+          searchMessageForm.getStartTimestamp(),
+          deserializers);
 
-      model.addAttribute("messages", searchResults.getMessages());
-      model.addAttribute("details", searchResults.getCompletionDetails());
-    }
+        model.addAttribute("messages", searchResults.getMessages());
+        model.addAttribute("details", searchResults.getCompletionDetails());
+      }
 
     return "search-message";
   }

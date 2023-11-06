@@ -50,15 +50,18 @@ import java.util.List;
 @RequestMapping("/topic")
 public final class TopicController {
   private final KafkaMonitor kafkaMonitor;
+  private final boolean topicMessagesEnabled;
   private final boolean topicDeleteEnabled;
   private final boolean topicCreateEnabled;
   private final MessageFormatConfiguration.MessageFormatProperties messageFormatProperties;
 
   public TopicController(KafkaMonitor kafkaMonitor,
+                         @Value("${topic.messageEnabled:true}") Boolean topicMessagesEnabled,
                          @Value("${topic.deleteEnabled:true}") Boolean topicDeleteEnabled,
                          @Value("${topic.createEnabled:true}") Boolean topicCreateEnabled,
                          MessageFormatConfiguration.MessageFormatProperties messageFormatProperties) {
     this.kafkaMonitor = kafkaMonitor;
+    this.topicMessagesEnabled = topicMessagesEnabled;
     this.topicDeleteEnabled = topicDeleteEnabled;
     this.topicCreateEnabled = topicCreateEnabled;
     this.messageFormatProperties = messageFormatProperties;
@@ -74,6 +77,7 @@ public final class TopicController {
     model.addAttribute("topic", topic);
     model.addAttribute("consumers", kafkaMonitor.getConsumersByTopics(Collections.singleton(topic)));
     model.addAttribute("topicDeleteEnabled", topicDeleteEnabled);
+    model.addAttribute("topicMessagesEnabled", topicMessagesEnabled);
     model.addAttribute("keyFormat", defaultKeyFormat);
     model.addAttribute("format", defaultFormat);
 
@@ -108,7 +112,7 @@ public final class TopicController {
     model.addAttribute("brokersCount", kafkaMonitor.getBrokers().size());
     return "topic-create";
   }
-
+ 
   @Operation(summary = "getTopic", description = "Get details for a topic")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Success"),

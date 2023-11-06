@@ -71,10 +71,11 @@
 
 <h2>Topic Messages: <a href="<@spring.url '/topic/${topic.name}'/>">${topic.name}</a></h2>
 
-<#assign selectedPartition=messageForm.partition!0?number>
-<#assign selectedFormat=messageForm.format!defaultFormat>
-<#assign selectedKeyFormat=messageForm.keyFormat!defaultKeyFormat>
-<#assign selectedIsAnyProtoOpt=messageForm.isAnyProto>
+    <#assign selectedPartition=messageForm.partition!0?number>
+    <#assign selectedFormat=messageForm.format!defaultFormat>
+    <#assign selectedKeyFormat=messageForm.keyFormat!defaultKeyFormat>
+    <#assign selectedIsAnyProtoOpt=messageForm.isAnyProto>
+
 
 <div id="partitionSizes">
     <#assign curPartition=topic.getPartition(selectedPartition).get()>
@@ -134,28 +135,28 @@
         &nbsp;&nbsp;
         <div class="form-group" id="protobufDescriptor">
         <#if descFiles?size != 0>
-          <label for="format">Protobuf descriptor</label>
-	        <select class="form-control" id="descFile" name="descFile">
-	          <#list descFiles as f>
-	           <option value="${f}" <#if f == defaultDescFile>selected="selected"</#if>>${f}</option>
-	          </#list>
-	        </select>
+        <label for="format">Protobuf descriptor</label>
+            <select class="form-control" id="descFile" name="descFile">
+            <#list descFiles as f>
+            <option value="${f}" <#if f == defaultDescFile>selected="selected"</#if>>${f}</option>
+            </#list>
+            </select>
         <#else>
-          <span class="errorMessage">No available descriptor, please check.</span>
+        <span class="errorMessage">No available descriptor, please check.</span>
         </#if>
         </div>
         &nbsp;&nbsp;
         <div class="form-group" id="protobufMsgType">
             <#if descFiles?size != 0>
-              <label class=control-label" for="format">Protobuf message type name</label>
-              <@spring.formInput path="messageForm.msgTypeName" attributes='class="form-control"'/>
+            <label class=control-label" for="format">Protobuf message type name</label>
+            <@spring.formInput path="messageForm.msgTypeName" attributes='class="form-control"'/>
             </#if>
         </div>
         &nbsp;&nbsp;
         <div class="form-group" id="protobufIsAnyProto">
-        	<label class=control-label" for="format">Is Any proto?</label>
+            <label class=control-label" for="format">Is Any proto?</label>
             <select class="form-control" id="isAnyProto" name="isAnyProto">
-                 <#list isAnyProtoOpts as opt>
+                <#list isAnyProtoOpts as opt>
                     <option value="${opt?c}" <#if opt == selectedIsAnyProtoOpt>selected="selected"</#if>>${opt?string('Yes', 'No')}</option>
                 </#list>
             </select>
@@ -181,13 +182,13 @@
                         <i class="fa fa-step-backward"></i>
                     </a>
                 </li>
-               <li class="page-item <#if messageForm.offset gte curPartition.size-messageForm.count>disabled</#if>">
+            <li class="page-item <#if messageForm.offset gte curPartition.size-messageForm.count>disabled</#if>">
                     <a class="page-link btn-success" href="<@spring.url '/topic/${topic.name}/messages?partition=${curPartition.id}&offset=${[(curPartition.size-messageForm.count),(messageForm.offset+messageForm.count)]?min}&count=${messageForm.count}&keyFormat=${selectedKeyFormat}&format=${selectedFormat}'/>"
                     <#if messageForm.offset gte curPartition.size-messageForm.count>tabindex="-1"</#if>>
                         <i class="fa fa-step-forward"></i>
                     </a>
                 </li>
-               <li class="page-item <#if messageForm.offset gte curPartition.size-messageForm.count>disabled</#if>">
+            <li class="page-item <#if messageForm.offset gte curPartition.size-messageForm.count>disabled</#if>">
                     <a class="page-link btn-success" href="<@spring.url '/topic/${topic.name}/messages?partition=${curPartition.id}&offset=${[(curPartition.size-messageForm.count),curPartition.firstOffset]?max}&count=${messageForm.count}&keyFormat=${selectedKeyFormat}&format=${selectedFormat}'/>"
                     <#if messageForm.offset gte curPartition.size-messageForm.count>tabindex="-1"</#if>>
                         <i class="fa fa-fast-forward"></i>
